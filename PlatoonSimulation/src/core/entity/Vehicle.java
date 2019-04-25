@@ -5,7 +5,7 @@ import processing.core.PVector;
 
 public class Vehicle {
 	
-	public PVector center;
+	public PVector position;
 	public PVector[] points;
 	
 	public float size = 3.25f;
@@ -17,19 +17,19 @@ public class Vehicle {
 	private PApplet launcher;
 	
 	public Vehicle(PApplet launcher, PVector center) {
-		this.center = center;
+		this.position = center;
 		this.launcher = launcher;
 		
 		setPoints();
 	}
 	public Vehicle(PApplet launcher, float x, float y) {
-		this.center = new PVector(x, y);
+		this.position = new PVector(x, y);
 		this.launcher = launcher;
 		
 		setPoints();
 	}
 	public Vehicle(PApplet launcher, float x, float y, boolean leader) {
-		this.center = new PVector(x, y);
+		this.position = new PVector(x, y);
 		this.launcher = launcher;
 		this.leader = leader;
 		
@@ -39,28 +39,20 @@ public class Vehicle {
 	// creates the initial points for the shape to follow
 	private void setPoints() {
 		points = new PVector[] {
-				new PVector(center.x, center.y + (10 * size)),
-				new PVector(center.x + (5 * size), center.y - (5 * size)),
-				new PVector(center.x, center.y - (2 * size)),
-				new PVector(center.x - (5 * size), center.y - (5 * size))};
+				new PVector(position.x, position.y + (10 * size)),
+				new PVector(position.x + (5 * size), position.y - (5 * size)),
+				new PVector(position.x, position.y - (2 * size)),
+				new PVector(position.x - (5 * size), position.y - (5 * size))};
 	}
 	
 	public void draw() {
+		launcher.fill(255);
 		launcher.beginShape();
-		
-		updatePos();
-		
 		// Add verticies of the shape
 		for (PVector point : points) {
 			launcher.vertex(point.x, point.y);
 		}
-		launcher.translate((rotation * -200) + (launcher.displayWidth / 3),0);
-		launcher.rotate(rotation);
+		launcher.rotate(PApplet.PI);
 		launcher.endShape();
-	}
-	
-	private void updatePos() {
-		rotation = (float) ((Math.sin(center.y) * 0.5f) + Math.PI);
-		center.y -= rotationSpeed;
 	}
 }

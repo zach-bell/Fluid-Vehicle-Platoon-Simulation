@@ -14,8 +14,9 @@ public class MainApp extends PApplet {
 	// All variables after for organization
 	// ------------------------------------
 	
-	public Vehicle[] vehicles;
 	public ParticleHandler pHandler;
+	public NoiseFlowField noiseField;
+	public Vehicle[] vehicles;
 	public float screenY = 0;
 	public float screenSpeed = 1.75f;
 	
@@ -26,20 +27,19 @@ public class MainApp extends PApplet {
 	
 	// Initializers should go here
 	public void setup() {
-		pHandler = new ParticleHandler(this);
+		noiseField = new NoiseFlowField(this);
+		pHandler = new ParticleHandler(this, noiseField);
 		
 		// Create a new vehicle
 		vehicles = new Vehicle[] {
-			new Vehicle(this, 0, 0, true)	
+			new Vehicle(this, width / 2, height / 2, true)	
 		};
 	}
 	
 	// the draw loop
 	public void draw() {
 		background(25);
-		
-		text("Screen pos: " + screenY, 10, 10);
-		translate(width / 2, height / 2);
+		noiseField.draw();
 		
 		// Draw particles first
 		pHandler.draw();
