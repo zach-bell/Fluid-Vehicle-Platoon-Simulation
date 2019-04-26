@@ -17,19 +17,27 @@ public class ParticleHandler {
 		this.launcher = launcher;
 		this.flowField = flowField;
 		
-		particleList = new Particle[750];
-		particleListOverField = new ArrayList<ArrayList<Particle>>(flowField.cols * flowField.rows);
+		particleList = new Particle[MainApp.particleCount];
+		particleListOverField = new ArrayList<ArrayList<Particle>>();
 		initParticles();
+		initFieldLists();
 	}
 	
 	public void initParticles() {
 		for (int i = 0; i < particleList.length; i++) {
-			particleList[i] = new Particle(launcher, flowField,
+			particleList[i] = new Particle(launcher, flowField, this,
 					new PVector(launcher.random(launcher.width), launcher.random(launcher.height)));
 		}
 	}
 	
+	public void initFieldLists() {
+		for (int i = 0; i < (flowField.cols * flowField.rows); i++) {
+			particleListOverField.add(new ArrayList<Particle>());
+		}
+	}
+	
 	public void draw() {
+		updateOverField();
 		for (Particle p : particleList) {
 			p.update();
 			p.draw();
@@ -37,15 +45,32 @@ public class ParticleHandler {
 	}
 	
 	public void updateOverField() {
-		for (ArrayList<Particle> aPlist : particleListOverField) {
-			aPlist.clear();
+// This was the old way, keep to learn from
+//		for (ArrayList<Particle> aPlist : particleListOverField) {
+//			aPlist.clear();
+//		}
+//		for (Particle p : particleList) {
+//			int x = PApplet.floor(p.position.x / flowField.scale);
+//			int y = PApplet.floor(p.position.y / flowField.scale);
+//			int index = x + y * flowField.cols;
+//			index = PApplet.constrain(index, 1, flowField.cols * flowField.rows) - 1;
+//			
+//			particleListOverField.get(index).add(p);
+//			p.activeGroup = new ArrayList<Particle>(particleListOverField.get(index));
+//		}
+		if (MainApp.drawCollisionLines) {
+			for (Particle p : particleList) {
+				p.drawCollisionLines(particleListOverField.get(p.flowFieldIndex));
+			}
 		}
-		for (Particle p : particleList) {
-			int x = PApplet.floor(p.position.x / flowField.scale);
-			int y = PApplet.floor(p.position.y / flowField.scale);
-			int index = x + y * flowField.cols;
-			index = PApplet.constrain(index, 1, flowField.cols * flowField.rows) - 1;
-			particleListOverField.get(index).add(p);
-		}
+	}
+	
+	public void addParticleToListOverField(Particle p) {
+		particleListOverField.get(p.flowFieldIndex).add(p);
+		p.activeGroup = particleListOverField.get(p.flowFieldIndex);
+	}
+	
+	public void removeParticleFromListOverField(Particle p, int index) {
+		particleListOverField.get(p.flowFieldIndex).remove(p);
 	}
 }

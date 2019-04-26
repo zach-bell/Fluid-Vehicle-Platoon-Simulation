@@ -5,6 +5,11 @@ import processing.core.PApplet;
 
 public class MainApp extends PApplet {
 	
+	public static boolean drawCollisionLines = false;
+	public static boolean drawFieldForces = false;
+	public static boolean drawFieldBounds = false;
+	public static int particleCount = 1500;
+	
 	// Main method. That makes this the launcher class
 	public static void main(String args[]) {
 		PApplet.main("core.MainApp");
@@ -39,8 +44,9 @@ public class MainApp extends PApplet {
 	// the draw loop
 	public void draw() {
 		background(25);
-		noiseField.draw();
 		
+		drawUI();
+		noiseField.draw();
 		// Draw particles first
 		pHandler.draw();
 		
@@ -50,5 +56,11 @@ public class MainApp extends PApplet {
 			v.draw();
 		}
 		screenY += screenSpeed;
+	}
+	
+	public void drawUI() {
+		fill(255);
+		textSize(22);
+		text("FPS: " + floor(frameRate), width - 100, 20);
 	}
 }

@@ -6,13 +6,12 @@ import processing.core.PVector;
 public class NoiseFlowField {
 	
 	public PApplet launcher;
-	public int scale = 20;
+	public int scale = 30;
 	public float inc = 0.043f;
 	public float zoff = 0;
 	public float translation = 0.0025f;
 	public int cols, rows;
 	public PVector[] flowField;
-	public boolean drawField = false;
 	
 	public NoiseFlowField(PApplet launcher) {
 		this.launcher = launcher;
@@ -31,17 +30,21 @@ public class NoiseFlowField {
 				float angle = launcher.noise(xoff, yoff, zoff) * (PApplet.TWO_PI - PApplet.PI);
 				
 				PVector v = PVector.fromAngle(angle);
-				v.setMag(0.1f);
 				flowField[index] = v;
 				
 				xoff += inc;
-				if (drawField) {
-					launcher.stroke(255);
+				if (MainApp.drawFieldForces) {
+					launcher.stroke(0, 200, 200);
 					launcher.pushMatrix();
 					launcher.translate(x * scale, y * scale);
 					launcher.rotate(v.heading());
 					launcher.line(0, 0, scale, 0);
 					launcher.popMatrix();
+				}
+				if (MainApp.drawFieldBounds) {
+					launcher.stroke(0, 50, 200);
+					launcher.noFill();
+					launcher.rect(x * scale, y * scale, scale, scale);
 				}
 			}
 			yoff += inc;
