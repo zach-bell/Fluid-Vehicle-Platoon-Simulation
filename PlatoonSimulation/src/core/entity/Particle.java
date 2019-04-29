@@ -2,25 +2,22 @@ package core.entity;
 
 import java.util.ArrayList;
 
+import core.MainApp;
 import core.NoiseFlowField;
-import core.ParticleHandler;
+import core.PhysicsHandler;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-public class Particle {
+public class Particle extends PhysicsObject {
 
-	private PApplet launcher;
+	private MainApp launcher;
 	private NoiseFlowField flowField;
-	private ParticleHandler handler;
+	private PhysicsHandler handler;
 
-	public PVector position, velocity, acceleration;
 	public ArrayList<Particle> activeGroup = null;
-	public float radius = 15f;
 	public float maxSpeed = 2;
-	public float mass = 0.1f;
-	public int flowFieldIndex = 0;
 
-	public Particle(PApplet launcher, NoiseFlowField flowField, ParticleHandler handler, PVector position) {
+	public Particle(MainApp launcher, NoiseFlowField flowField, PhysicsHandler handler, PVector position) {
 		this.launcher = launcher;
 		this.flowField = flowField;
 		this.handler = handler;
@@ -28,12 +25,16 @@ public class Particle {
 
 		velocity = new PVector();
 		acceleration = new PVector();
+		mass = 0.2f;
+		radius = 15f;
 	}
 
 	public void draw() {
-		launcher.noStroke();
-		launcher.fill(255);
-		launcher.ellipse(position.x, position.y, radius, radius);
+		if (MainApp.drawParticles) {
+			launcher.noFill();
+			launcher.stroke(255);
+			launcher.ellipse(position.x, position.y, radius, radius);
+		}
 	}
 
 	public void update() {
@@ -48,16 +49,20 @@ public class Particle {
 	}
 
 	public void followField(PVector[] field) {
-		int x = PApplet.floor(position.x / flowField.scale);
-		int y = PApplet.floor(position.y / flowField.scale);
-		int index = x + y * flowField.cols;
+		int index = flowField.getIndex(position);
 		index = PApplet.constrain(index, 1, flowField.cols * flowField.rows) - 1;
 
+		// The particle knows it's changed its index
 		if (flowFieldIndex != index) {
+			// It will remove itself from that active list
 			handler.removeParticleFromListOverField(this, flowFieldIndex);
+			// Update its own index
 			flowFieldIndex = index;
+			// Grab the new force to follow
 			PVector force = field[flowFieldIndex];
+			// Apply it to itself
 			applyForce(force.mult(mass));
+			// Add itself to the new active list
 			handler.addParticleToListOverField(this);
 		}
 	}
@@ -65,14 +70,11 @@ public class Particle {
 	public void drawCollisionLines(ArrayList<Particle> fieldList) {
 		for (Particle p : fieldList) {
 			launcher.noFill();
+			launcher.strokeWeight(1);
 			launcher.stroke(255, 100, 100);
 			if (getDistance(p.position, position) < 100)
 				launcher.line(p.position.x, p.position.y, position.x, position.y);
 		}
-	}
-
-	public float getDistance(PVector dis1, PVector dis2) {
-		return PApplet.sqrt(PApplet.pow((dis2.x - dis1.x), 2) + PApplet.pow((dis2.y - dis1.y), 2));
 	}
 
 	public void checkCollisions() {
@@ -85,28 +87,6 @@ public class Particle {
 		}
 	}
 
-	private boolean checkOverlap(Particle other) {
-		float edgeDistance = radius + other.radius;
-		float distanceBetween = getDistance(other.position, position);
-		if ((distanceBetween <= edgeDistance) & (distanceBetween > 0)) {
-			return true;
-		}
-		return false;
-	}
-
-	private PVector getCollisionForce(Particle p) {
-		PVector distanceVect = PVector.sub(p.position, position);
-		float distanceVectMag = distanceVect.mag();
-		float minDistance = radius + p.radius;
-		
-		float distanceCorrection = (minDistance - distanceVectMag) / 2.0f;
-		PVector d = distanceVect.copy();
-		PVector correctionVector = d.normalize().mult(distanceCorrection);
-		
-		correctionVector.setMag(p.mass);
-		return correctionVector.mult(p.mass);
-	}
-
 	public void checkEdges() {
 		if (position.x > launcher.width)
 			position.x = 0;
@@ -116,9 +96,5 @@ public class Particle {
 			position.y = 0;
 		if (position.y < 0)
 			position.y = launcher.height;
-	}
-
-	public void applyForce(PVector force) {
-		acceleration.add(force);
 	}
 }

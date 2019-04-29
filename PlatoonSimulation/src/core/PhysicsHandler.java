@@ -3,24 +3,27 @@ package core;
 import java.util.ArrayList;
 
 import core.entity.Particle;
-import processing.core.PApplet;
+import core.entity.Vehicle;
 import processing.core.PVector;
 
-public class ParticleHandler {
+public class PhysicsHandler {
 	
 	private Particle[] particleList;
+	private Vehicle[] vehicles;
 	private ArrayList<ArrayList<Particle>> particleListOverField;
-	private PApplet launcher;
+	private MainApp launcher;
 	private NoiseFlowField flowField;
 	
-	public ParticleHandler(PApplet launcher, NoiseFlowField flowField) {
+	public PhysicsHandler(MainApp launcher, NoiseFlowField flowField) {
 		this.launcher = launcher;
 		this.flowField = flowField;
 		
 		particleList = new Particle[MainApp.particleCount];
 		particleListOverField = new ArrayList<ArrayList<Particle>>();
+		
 		initParticles();
 		initFieldLists();
+		initVehicles();
 	}
 	
 	public void initParticles() {
@@ -36,33 +39,38 @@ public class ParticleHandler {
 		}
 	}
 	
-	public void draw() {
-		updateOverField();
-		for (Particle p : particleList) {
-			p.update();
-			p.draw();
-		}
+	public void initVehicles() {
+		vehicles = new Vehicle[] {
+				new Vehicle(launcher, (launcher.width / 2), (launcher.height / 2), true)
+		};
 	}
 	
-	public void updateOverField() {
-// This was the old way, keep to learn from
-//		for (ArrayList<Particle> aPlist : particleListOverField) {
-//			aPlist.clear();
-//		}
-//		for (Particle p : particleList) {
-//			int x = PApplet.floor(p.position.x / flowField.scale);
-//			int y = PApplet.floor(p.position.y / flowField.scale);
-//			int index = x + y * flowField.cols;
-//			index = PApplet.constrain(index, 1, flowField.cols * flowField.rows) - 1;
-//			
-//			particleListOverField.get(index).add(p);
-//			p.activeGroup = new ArrayList<Particle>(particleListOverField.get(index));
-//		}
+	public void draw() {
+		// We want to keep these lists separate until the new method is designed
 		if (MainApp.drawCollisionLines) {
 			for (Particle p : particleList) {
 				p.drawCollisionLines(particleListOverField.get(p.flowFieldIndex));
 			}
 		}
+		for (Particle p : particleList) {
+			p.update();
+			p.draw();
+		}
+		/* Normally we would draw just Physics Object draw and update
+		 * but we need to draw vehicles on top of the particles
+		 */
+		for (Vehicle v : vehicles) {
+			v.update();
+			v.draw();
+		}
+	}
+	
+	public Particle[] getParticles() {
+		return particleList;
+	}
+	
+	public ArrayList<Particle> getActiveFieldAt(int index) {
+		return particleListOverField.get(index);
 	}
 	
 	public void addParticleToListOverField(Particle p) {

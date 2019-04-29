@@ -7,9 +7,10 @@ public class NoiseFlowField {
 	
 	public PApplet launcher;
 	public int scale = 30;
-	public float inc = 0.043f;
+	public float inc = 0.143f;
 	public float zoff = 0;
-	public float translation = 0.0025f;
+	public float translation = 0.0125f;
+	public float magnitude = 1;
 	public int cols, rows;
 	public PVector[] flowField;
 	
@@ -30,7 +31,7 @@ public class NoiseFlowField {
 				float angle = launcher.noise(xoff, yoff, zoff) * (PApplet.TWO_PI - PApplet.PI);
 				
 				PVector v = PVector.fromAngle(angle);
-				flowField[index] = v;
+				flowField[index] = v.setMag(magnitude);
 				
 				xoff += inc;
 				if (MainApp.drawFieldForces) {
@@ -50,5 +51,15 @@ public class NoiseFlowField {
 			yoff += inc;
 		}
 		zoff += translation;
+	}
+	
+	public int getIndex(int x, int y) {
+		return x + y * cols;
+	}
+	
+	public int getIndex(PVector position) {
+		int x = PApplet.floor(position.x / scale);
+		int y = PApplet.floor(position.y / scale);
+		return x + y * cols;
 	}
 }

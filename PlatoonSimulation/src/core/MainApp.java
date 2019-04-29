@@ -1,13 +1,14 @@
 package core;
 
-import core.entity.Vehicle;
 import processing.core.PApplet;
 
 public class MainApp extends PApplet {
 	
-	public static boolean drawCollisionLines = false;
+	public static boolean drawCollisionLines = true;
 	public static boolean drawFieldForces = false;
-	public static boolean drawFieldBounds = false;
+	public static boolean drawFieldBounds = true;
+	public static boolean drawParticles = false;
+	public static boolean drawVehicles = true;
 	public static int particleCount = 1500;
 	
 	// Main method. That makes this the launcher class
@@ -19,11 +20,8 @@ public class MainApp extends PApplet {
 	// All variables after for organization
 	// ------------------------------------
 	
-	public ParticleHandler pHandler;
+	public PhysicsHandler pHandler;
 	public NoiseFlowField noiseField;
-	public Vehicle[] vehicles;
-	public float screenY = 0;
-	public float screenSpeed = 1.75f;
 	
 	// To setup the program specifically
 	public void settings() {
@@ -33,32 +31,26 @@ public class MainApp extends PApplet {
 	// Initializers should go here
 	public void setup() {
 		noiseField = new NoiseFlowField(this);
-		pHandler = new ParticleHandler(this, noiseField);
-		
-		// Create a new vehicle
-		vehicles = new Vehicle[] {
-			new Vehicle(this, width / 2, height / 2, true)	
-		};
+		pHandler = new PhysicsHandler(this, noiseField);
 	}
 	
 	// the draw loop
 	public void draw() {
 		background(25);
 		
-		drawUI();
 		noiseField.draw();
-		// Draw particles first
 		pHandler.draw();
-		
-		// For each vehicle
-		fill(200);
-		for (Vehicle v : vehicles) {
-			v.draw();
-		}
-		screenY += screenSpeed;
+		drawUI();
+	}
+	
+	public NoiseFlowField getNoiseField() {
+		return noiseField;
 	}
 	
 	public void drawUI() {
+		noStroke();
+		fill(25);
+		rect(width - 100, 0, 80, 22);
 		fill(255);
 		textSize(22);
 		text("FPS: " + floor(frameRate), width - 100, 20);
