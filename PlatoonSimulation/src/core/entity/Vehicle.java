@@ -9,7 +9,6 @@ import processing.core.PVector;
 
 public class Vehicle extends PhysicsObject {
 	
-	public PVector position;
 	public PVector[] points;
 	
 	public float size = 3.25f;
