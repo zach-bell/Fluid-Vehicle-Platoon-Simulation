@@ -3,6 +3,7 @@ package core;
 import java.util.ArrayList;
 
 import core.entity.Particle;
+import core.entity.PhysicsObject;
 import core.entity.Vehicle;
 import processing.core.PVector;
 
@@ -10,7 +11,7 @@ public class PhysicsHandler {
 	
 	private Particle[] particleList;
 	private Vehicle[] vehicles;
-	private ArrayList<ArrayList<Particle>> particleListOverField;
+	private ArrayList<ArrayList<PhysicsObject>> activeListOverField;
 	private MainApp launcher;
 	private NoiseFlowField flowField;
 	
@@ -19,7 +20,7 @@ public class PhysicsHandler {
 		this.flowField = flowField;
 		
 		particleList = new Particle[MainApp.particleCount];
-		particleListOverField = new ArrayList<ArrayList<Particle>>();
+		activeListOverField = new ArrayList<ArrayList<PhysicsObject>>();
 		
 		initParticles();
 		initFieldLists();
@@ -35,23 +36,17 @@ public class PhysicsHandler {
 	
 	public void initFieldLists() {
 		for (int i = 0; i < (flowField.cols * flowField.rows); i++) {
-			particleListOverField.add(new ArrayList<Particle>());
+			activeListOverField.add(new ArrayList<PhysicsObject>());
 		}
 	}
 	
 	public void initVehicles() {
 		vehicles = new Vehicle[] {
-				new Vehicle(launcher, (launcher.width / 2), (launcher.height / 2), true)
+				new Vehicle(launcher, flowField, this, (launcher.width / 2), (launcher.height / 2), true)
 		};
 	}
 	
 	public void draw() {
-		// We want to keep these lists separate until the new method is designed
-		if (MainApp.drawCollisionLines) {
-			for (Particle p : particleList) {
-				p.drawCollisionLines(particleListOverField.get(p.flowFieldIndex));
-			}
-		}
 		for (Particle p : particleList) {
 			p.update();
 			p.draw();
@@ -69,16 +64,15 @@ public class PhysicsHandler {
 		return particleList;
 	}
 	
-	public ArrayList<Particle> getActiveFieldAt(int index) {
-		return particleListOverField.get(index);
+	public ArrayList<PhysicsObject> getActiveFieldAt(int index) {
+		return activeListOverField.get(index);
 	}
 	
-	public void addParticleToListOverField(Particle p) {
-		particleListOverField.get(p.flowFieldIndex).add(p);
-		p.activeGroup = particleListOverField.get(p.flowFieldIndex);
+	public void addObjectToListOverField(PhysicsObject p) {
+		activeListOverField.get(p.flowFieldIndex).add(p);
 	}
 	
-	public void removeParticleFromListOverField(Particle p, int index) {
-		particleListOverField.get(p.flowFieldIndex).remove(p);
+	public void removeObjectFromListOverField(PhysicsObject p, int index) {
+		activeListOverField.get(p.flowFieldIndex).remove(p);
 	}
 }

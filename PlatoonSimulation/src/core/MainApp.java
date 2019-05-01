@@ -1,15 +1,17 @@
 package core;
 
 import processing.core.PApplet;
+import processing.core.PVector;
 
 public class MainApp extends PApplet {
 	
-	public static boolean drawCollisionLines = true;
+	public static boolean drawCollisionLines = false;
 	public static boolean drawFieldForces = false;
-	public static boolean drawFieldBounds = true;
-	public static boolean drawParticles = false;
+	public static boolean drawFieldBounds = false;
+	public static boolean drawParticles = true;
 	public static boolean drawVehicles = true;
-	public static int particleCount = 1500;
+	public static int particleCount = 1000;
+	public static PVector globalForce;
 	
 	// Main method. That makes this the launcher class
 	public static void main(String args[]) {
@@ -30,6 +32,8 @@ public class MainApp extends PApplet {
 	
 	// Initializers should go here
 	public void setup() {
+		globalForce = new PVector(0, 0.5f);
+		
 		noiseField = new NoiseFlowField(this);
 		pHandler = new PhysicsHandler(this, noiseField);
 	}
@@ -37,10 +41,14 @@ public class MainApp extends PApplet {
 	// the draw loop
 	public void draw() {
 		background(25);
-		
+		update();
 		noiseField.draw();
 		pHandler.draw();
 		drawUI();
+	}
+	
+	public void update() {
+		
 	}
 	
 	public NoiseFlowField getNoiseField() {

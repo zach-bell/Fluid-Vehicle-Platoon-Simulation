@@ -10,7 +10,7 @@ public class NoiseFlowField {
 	public float inc = 0.143f;
 	public float zoff = 0;
 	public float translation = 0.0125f;
-	public float magnitude = 1;
+	public float magnitude = 100;
 	public int cols, rows;
 	public PVector[] flowField;
 	
@@ -51,6 +51,10 @@ public class NoiseFlowField {
 			yoff += inc;
 		}
 		zoff += translation;
+	}
+	
+	public PVector flowFieldForceAtIndex(int index) {
+		return flowField[index];
 	}
 	
 	public int getIndex(int x, int y) {
