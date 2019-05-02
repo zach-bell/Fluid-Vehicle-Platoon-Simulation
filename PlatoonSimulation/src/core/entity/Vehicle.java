@@ -56,11 +56,6 @@ public class Vehicle extends PhysicsObject {
 	}
 	
 	public void draw() {
-		if (MainApp.drawParticles) {
-			launcher.noFill();
-			launcher.stroke(255, 255, 0);
-			launcher.ellipse(position.x, position.y, radius, radius);
-		}
 		if(MainApp.drawVehicles) {
 			launcher.pushMatrix();	// push matrix to allow translations or rotations
 			launcher.stroke(255,0,0);
@@ -80,7 +75,12 @@ public class Vehicle extends PhysicsObject {
 			launcher.noStroke();
 			launcher.fill(220);
 			launcher.textSize(10);
-			launcher.text("" + collisions, position.x, position.y);
+			launcher.text("" + collisions, position.x - 8, position.y + 8);
+		}
+		if (MainApp.drawCollisionLines) {
+			launcher.noFill();
+			launcher.stroke(255, 255, 0);
+			launcher.ellipse(position.x, position.y, radius, radius);
 		}
 	}
 	

@@ -6,11 +6,12 @@ import processing.core.PVector;
 public class NoiseFlowField {
 	
 	public PApplet launcher;
-	public int scale = 30;
-	public float inc = 0.143f;
+	public int scale = 30;				// Scale of the field
+	public float inc = 0.143f;			// Scale of the noise
+	public float translation = 0.0125f;	// Speed of the noise movement in 3D
+	public float magnitude = 50;		// Strength of the field
+	
 	public float zoff = 0;
-	public float translation = 0.0125f;
-	public float magnitude = 100;
 	public int cols, rows;
 	public PVector[] flowField;
 	

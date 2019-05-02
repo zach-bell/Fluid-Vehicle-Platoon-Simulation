@@ -25,6 +25,7 @@ public abstract class PhysicsObject {
 	public float maxSpeed = 2;
 	public float radius = 5;
 	public int flowFieldIndex = 0;
+	public int indexInActiveGroup = 0;
 	public boolean followNoiseField = true;
 	public int color = 0;
 	
@@ -95,9 +96,10 @@ public abstract class PhysicsObject {
 						xa = 0;
 					if (yb < 0)
 						yb = 0;
-					activeGroupList.add(launcher.pHandler.getActiveFieldAt(flowField.getIndex(xa, yb)));
+					activeGroupList.add(handler.getActiveFieldAt(flowField.getIndex(xa, yb)));
 				}
 			}
+			indexInActiveGroup = handler.getActiveFieldAt(index).indexOf(this);
 		} // end of if index changed
 		
 		for (ArrayList<PhysicsObject> list : activeGroupList) {
@@ -107,11 +109,14 @@ public abstract class PhysicsObject {
 					collisions ++;
 				}
 				if (MainApp.drawCollisionLines) {
-					launcher.noFill();
-					launcher.strokeWeight(2);
-					launcher.stroke(color);
-					if (getDistance(p.position, position) < 100)
-						launcher.line(p.position.x, p.position.y, position.x, position.y);
+//					if (indexInActiveGroup == 0) {
+					if (cellsAway == 2) {
+						launcher.noFill();
+						launcher.strokeWeight(2);
+						launcher.stroke(color);
+						if (getDistance(p.position, position) < 100)
+							launcher.line(p.position.x, p.position.y, position.x, position.y);
+					}
 				}
 			}
 		}

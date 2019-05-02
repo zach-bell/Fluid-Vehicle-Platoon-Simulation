@@ -10,16 +10,19 @@ public class PhysicsHandler {
 	
 	private Particle[] particleList;
 	private Vehicle[] vehicles;
+	private PVector[] targets;
 	private Vehicle leader;
 	private ArrayList<ArrayList<PhysicsObject>> activeListOverField;
 	private MainApp launcher;
 	private NoiseFlowField flowField;
 	
+	private int timeInterval = 20000;	// 20 seconds
+	private int previousTime = 0;
+	
 	public PhysicsHandler(MainApp launcher, NoiseFlowField flowField) {
 		this.launcher = launcher;
 		this.flowField = flowField;
 		
-		particleList = new Particle[MainApp.particleCount];
 		activeListOverField = new ArrayList<ArrayList<PhysicsObject>>();
 		
 		initParticles();
@@ -28,6 +31,8 @@ public class PhysicsHandler {
 	}
 	
 	public void initParticles() {
+		MainApp.println("Initializing particles...");
+		particleList = new Particle[MainApp.particleCount];
 		for (int i = 0; i < particleList.length; i++) {
 			particleList[i] = new Particle(launcher, flowField, this,
 					new PVector(launcher.random(launcher.width), launcher.random(launcher.height)));
@@ -51,9 +56,18 @@ public class PhysicsHandler {
 				new Vehicle(launcher, flowField, this,
 						(launcher.width / 2), (launcher.height / 1.3f)),
 		};
+		
+		// Initialize targets
+		targets = new PVector[vehicles.length];
+		for (int i = 0; i < targets.length; i++) {
+			targets[i] = new PVector(launcher.random(0, launcher.width), (launcher.height / 2));
+		}
 	}
 	
 	public void draw() {
+		if (!MainApp.platoonVehicles)
+			randomizeTargets();
+		
 		for (Particle p : particleList) {
 			p.update();
 			p.draw();
@@ -61,11 +75,32 @@ public class PhysicsHandler {
 		/* Normally we would draw just Physics Object draw and update
 		 * but we need to draw vehicles on top of the particles
 		 */
+		int vIndex = 0;
 		for (Vehicle v : vehicles) {
 			v.update();
 			v.draw();
+			
 			if (!v.leader)
-				v.followTarget(leader.position);
+				if (MainApp.platoonVehicles)
+					v.followTarget(leader.position);
+				else
+					v.followTarget(targets[vIndex]);
+			vIndex ++;
+		}
+	}
+	
+	public void randomizeTargets() {
+		int timePassed = launcher.millis() - previousTime;
+
+		for (PVector vec : targets) {
+			if (timePassed > timeInterval) {
+				vec.set(launcher.random(0, launcher.width), (launcher.height / 2));
+				previousTime = launcher.millis();
+			}
+			launcher.noFill();
+			launcher.stroke(50, 255, 50);
+			launcher.strokeWeight(1);
+			launcher.ellipse(vec.x, vec.y, 4, 4);
 		}
 	}
 	
