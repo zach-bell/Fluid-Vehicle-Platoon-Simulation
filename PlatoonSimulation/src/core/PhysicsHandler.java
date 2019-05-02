@@ -1,7 +1,6 @@
 package core;
 
 import java.util.ArrayList;
-
 import core.entity.Particle;
 import core.entity.PhysicsObject;
 import core.entity.Vehicle;
@@ -11,6 +10,7 @@ public class PhysicsHandler {
 	
 	private Particle[] particleList;
 	private Vehicle[] vehicles;
+	private Vehicle leader;
 	private ArrayList<ArrayList<PhysicsObject>> activeListOverField;
 	private MainApp launcher;
 	private NoiseFlowField flowField;
@@ -41,8 +41,15 @@ public class PhysicsHandler {
 	}
 	
 	public void initVehicles() {
-		vehicles = new Vehicle[] {
-				new Vehicle(launcher, flowField, this, (launcher.width / 2), (launcher.height / 2), true)
+		leader = new Vehicle(launcher, flowField, this,
+				(launcher.width / 2), (launcher.height / 2), true);
+		vehicles = new Vehicle[] {leader,
+				new Vehicle(launcher, flowField, this,
+						(launcher.width / 2), (launcher.height / 1.7f)),
+				new Vehicle(launcher, flowField, this,
+						(launcher.width / 2), (launcher.height / 1.47f)),
+				new Vehicle(launcher, flowField, this,
+						(launcher.width / 2), (launcher.height / 1.3f)),
 		};
 	}
 	
@@ -57,7 +64,20 @@ public class PhysicsHandler {
 		for (Vehicle v : vehicles) {
 			v.update();
 			v.draw();
+			if (!v.leader)
+				v.followTarget(leader.position);
 		}
+	}
+	
+	public float getAverageCollisions() {
+		int sum = 0;
+		for (Vehicle v : vehicles)
+			sum += v.collisions;
+		return sum / vehicles.length;
+	}
+	
+	public void moveLeaderVehicle() {
+		leader.followTarget(new PVector(launcher.mouseX, launcher.mouseY));
 	}
 	
 	public Particle[] getParticles() {

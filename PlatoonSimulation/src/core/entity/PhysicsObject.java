@@ -26,6 +26,7 @@ public abstract class PhysicsObject {
 	public float radius = 5;
 	public int flowFieldIndex = 0;
 	public boolean followNoiseField = true;
+	public int color = 0;
 	
 	public abstract void draw();
 	public abstract void update();
@@ -108,7 +109,7 @@ public abstract class PhysicsObject {
 				if (MainApp.drawCollisionLines) {
 					launcher.noFill();
 					launcher.strokeWeight(2);
-					launcher.stroke(255, 100, 255);
+					launcher.stroke(color);
 					if (getDistance(p.position, position) < 100)
 						launcher.line(p.position.x, p.position.y, position.x, position.y);
 				}

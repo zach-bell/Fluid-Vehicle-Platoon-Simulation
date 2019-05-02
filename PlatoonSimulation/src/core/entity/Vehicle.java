@@ -11,8 +11,11 @@ public class Vehicle extends PhysicsObject {
 	public PVector[] points;
 	
 	public float size = 3.25f;
-	public float mouseSpeed = 0.3f;
+	public float movementSpeed = 0.05f;
 	public boolean leader = false;
+	public float initialY = 0;
+	public int timeInterval = 5000;
+	public int previousTime = 0;
 	
 	public Vehicle(MainApp launcher, NoiseFlowField flowField, PhysicsHandler handler, float x, float y) {
 		this.position = new PVector(x, y);
@@ -34,10 +37,12 @@ public class Vehicle extends PhysicsObject {
 	}
 	
 	private void init() {
+		initialY = position.y;
 		followNoiseField = false;
 		radius = 20;
 		mass = 100;
 		maxSpeed = 4;
+		color = launcher.color(255, 100, 255);
 	}
 	
 	// creates the initial points for the shape to follow
@@ -70,14 +75,22 @@ public class Vehicle extends PhysicsObject {
 			launcher.rotate(PApplet.PI);	// rotate 180 degrees
 			launcher.endShape();
 			launcher.popMatrix();
+			
+			// Text for collisions
+			launcher.noStroke();
+			launcher.fill(220);
+			launcher.textSize(10);
+			launcher.text("" + collisions, position.x, position.y);
 		}
-		launcher.noStroke();
-		launcher.fill(220);
-		launcher.textSize(10);
-		launcher.text("" + collisions, position.x, position.y);
 	}
 	
 	public void update() {
+		int timePassed = launcher.millis() - previousTime;
+		if (timePassed > timeInterval) {
+			collisions = 0;
+			previousTime = launcher.millis();
+		}
+		
 		checkCollisions();
 		
 		velocity.add(acceleration);
@@ -87,23 +100,20 @@ public class Vehicle extends PhysicsObject {
 			position.x = launcher.width;
 		if (position.x < 0)
 			position.x = 0;
-		if (position.y > (launcher.height / 2) + 2)
-			position.y = launcher.height / 2;
-		if (position.y < (launcher.height / 2) - 2)
-			position.y = launcher.height / 2;
+		if (position.y > (initialY) + 2)
+			position.y = initialY;
+		if (position.y < initialY - 2)
+			position.y = initialY;
 		velocity.mult(0.99f);
 		acceleration.mult(0);
 		
 		setPoints();
-		followMouse();
 	}
 	
-	public void followMouse() {
-		if (launcher.mousePressed) {
-			if (position.x < launcher.mouseX)
-				applyForce(new PVector(mouseSpeed, 0));
-			if (position.x > launcher.mouseX)
-				applyForce(new PVector(-mouseSpeed, 0));
-		}
+	public void followTarget(PVector target) {
+		if (position.x < target.x - 5)
+			applyForce(new PVector(movementSpeed, 0));
+		if (position.x > target.x + 5)
+			applyForce(new PVector(-movementSpeed, 0));
 	}
 }
