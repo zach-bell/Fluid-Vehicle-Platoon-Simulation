@@ -1,7 +1,12 @@
 # Fluid-Vehicle-Platoon-Simulation
 <p>A visual fluid physics engine that shows the efficiency of platoons by calculating the number of total particle collisions amongst the vehicles and averaging them to display a total.</p>
 <p>This program has GUI elements to interact with and see the result of true physics interactions between objects.</p>
-<p>Preview of the program is below, a downloadable copy is available <a href="https://github.com/zach-bell/Fluid-Vehicle-Platoon-Simulation/blob/master/PlatoonSimulation.jar?raw=true">here!</a></p><br>
+<p>Preview of the program is below, a downloadable copy is available <a href="https://github.com/zach-bell/Fluid-Vehicle-Platoon-Simulation/blob/master/PlatoonSimulation.jar?raw=true">here!</a></p>
+<h2>Screen Shots fo the program below:</h2>
+<img src="https://i.gyazo.com/4c199498e9764858c6d7af9e0df4e41b.png"></img>
+<img src="https://i.gyazo.com/67e5b1326ba413a39613d0d5e6224448.png"></img>
+<img src="https://i.gyazo.com/183855cc9173e4eae0f15f809fb6b019.png"></img>
+<br>
 <p>Youtube: <a href="https://youtu.be/W5bKkdVlCCk">https://youtu.be/W5bKkdVlCCk</a></p>
 
 # Features:
