@@ -1,10 +1,6 @@
 package core;
 
-import controlP5.ControlEvent;
-import controlP5.ControlP5;
-import controlP5.Textfield;
 import processing.core.PApplet;
-import processing.core.PFont;
 import processing.core.PVector;
 
 public class MainApp extends PApplet {
@@ -17,13 +13,57 @@ public class MainApp extends PApplet {
 	public static boolean drawPointFlow = true;
 	public static boolean platoonVehicles = true;
 	
+	public static float particleMass = 0.02f;
+	public static float vehicleMass = 1000;
 	public static int particleCount = 1500;
+	public static int flowFieldScale = 30;
 	public static PVector globalForce;
 	
 	// Main method. That makes this the launcher class
 	public static void main(String args[]) {
 		println("Launching Vehicle platooning program demonstration...");
+		
+		try {
+			if (args[0] != null) {
+				particleCount = Integer.parseInt(args[0]);
+			}
+			if (args[1] != null) {
+				particleMass = (float) Double.parseDouble(args[1]);
+			}
+			if (args[2] != null) {
+				vehicleMass = (float) Double.parseDouble(args[2]);
+			}
+			if (args[3] != null) {
+				flowFieldScale = Integer.parseInt(args[3]);
+			}
+		} catch (NumberFormatException e) {
+			println("So those numbers seemed to not actually be numbers.");
+			printArgumentOptions();
+		} catch (Exception e) {
+			println("\nAn error occured, you probably didn't put any arguments.");
+			printArgumentOptions();
+		}
 		PApplet.main("core.MainApp");
+	}
+	
+	public static void printArgumentOptions() {
+		println("\nLooks like you're trying to put in some arguments there...");
+		println("------------------------------------------------------------");
+		println("Usage (all arguments are optional):");
+		println("java -jar PlatoonSimulation.jar [ParticleCount] [ParticleMass] [VehicleMass]"
+				+ " [FlowFieldScale]\n");
+		println("[Particle Count]\nSets the count of particles to run in the simulation.\nPlease"
+				+ " be careful with how many you enter as over 5000 gets really dicey."
+				+ "\nDefault is 1500\n");
+		println("[Particle Mass]\nSets the mass of particles in the simulation."
+				+ "\nDefault is 0.02\n");
+		println("[Vehicle Mass]\nSets the mass of the vehicles in the simulation."
+				+ "\nDefault is 1000\n");
+		println("[Flow Field Scale]\nSets the size of the field scale.\nIt is dangerous to lower"
+				+ " this number above the width of the screen."
+				+ "\nDefault is 30");
+		println("------------------------------------------------------------");
+		println("Running with default values instead!\n");
 	}
 	
 	// ------------------------------------
@@ -33,7 +73,6 @@ public class MainApp extends PApplet {
 	public PhysicsHandler pHandler;
 	public NoiseFlowField noiseField;
 	
-	private ControlP5 cp5;
 	private int buttonActiveColor = 0;
 	private int buttonInactiveColor = 0;
 	
@@ -45,15 +84,10 @@ public class MainApp extends PApplet {
 	// Initializers should go here
 	public void setup() {
 		surface.setTitle("Vehicle Platooning in a physics environment");
-		cp5 = new ControlP5(this);
 		globalForce = new PVector(0, 0.25f);
 		
 		buttonActiveColor = color(100, 255, 100);
 		buttonInactiveColor = color(255, 100, 100);
-		
-		PFont font = createFont("arial",18);
-		cp5.addTextfield("particles").setPosition(10, 60).setSize(80, 20).setFont(font)
-			.setFocus(true).setColor(color(255, 255, 255)).setText("" + particleCount).setColorBackground(color(25));
 		
 		noiseField = new NoiseFlowField(this);
 		pHandler = new PhysicsHandler(this, noiseField);
@@ -76,12 +110,14 @@ public class MainApp extends PApplet {
 		noStroke();
 		fill(25);
 		rect(width - 100, 0, 80, 22);
+		rect((width / 2) - 70, 2, 170, 22);
 		fill(255);
 		textSize(22);
 		text("FPS: " + floor(frameRate), width - 100, 20);
+		text("Particles: " + particleCount, (width / 2) - 70, 20);
+		
 		
 		drawButtons();
-		updateParticleCount();
 		
 		noStroke();
 		fill(25);
@@ -90,14 +126,6 @@ public class MainApp extends PApplet {
 				(int) map(300 - pHandler.getAverageCollisions(), 0, 300, 150, 255), 150);
 		textSize(22);
 		text("Average Collisions: " + floor(pHandler.getAverageCollisions()), 10, 20);
-		fill(255);
-		text(cp5.get(Textfield.class, "particles").getText(), 10, 116);
-	}
-	
-	public void controlEvent(ControlEvent theEvent) {
-		if (theEvent.isAssignableFrom(Textfield.class)) {
-			
-		}
 	}
 	
 	public void drawButtons() {
@@ -177,18 +205,6 @@ public class MainApp extends PApplet {
 			if (mouseY > 168 & mouseY < 190) {
 				drawPointFlow = !drawPointFlow;
 			}
-		}
-	}
-	
-	public void updateParticleCount() {
-		try {
-			int newParticleCount = Integer.parseInt(cp5.get(Textfield.class, "particles").getText());
-			if (newParticleCount != particleCount) {
-				particleCount = newParticleCount;
-				pHandler.initParticles();
-			}
-		} catch (NumberFormatException e) {
-			println("Not real number");
 		}
 	}
 	

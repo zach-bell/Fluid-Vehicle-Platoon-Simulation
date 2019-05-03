@@ -46,6 +46,7 @@ public class PhysicsHandler {
 	}
 	
 	public void initVehicles() {
+		MainApp.println("Initializing vehicles...");
 		leader = new Vehicle(launcher, flowField, this,
 				(launcher.width / 2), (launcher.height / 2), true);
 		vehicles = new Vehicle[] {leader,

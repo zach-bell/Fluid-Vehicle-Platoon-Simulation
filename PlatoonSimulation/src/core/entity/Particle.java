@@ -21,7 +21,7 @@ public class Particle extends PhysicsObject {
 		
 		particlePoints = new ArrayList<ParticlePoint>();
 		
-		mass = 0.01f;
+		mass = MainApp.particleMass;
 		timeInterval = (int) launcher.random(250, 750);
 		radius = launcher.random(15f, 20f);
 		cellsAway = 1;

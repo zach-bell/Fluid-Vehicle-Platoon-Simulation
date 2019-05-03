@@ -40,7 +40,7 @@ public class Vehicle extends PhysicsObject {
 		initialY = position.y;
 		followNoiseField = false;
 		radius = 20;
-		mass = 100;
+		mass = MainApp.vehicleMass;
 		maxSpeed = 4;
 		color = launcher.color(255, 100, 255);
 	}

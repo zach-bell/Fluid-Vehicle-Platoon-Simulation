@@ -17,7 +17,10 @@ public class NoiseFlowField {
 	
 	public NoiseFlowField(PApplet launcher) {
 		this.launcher = launcher;
+
+		MainApp.println("Initializing flow field...");
 		
+		scale = MainApp.flowFieldScale;
 		cols = PApplet.floor(launcher.width / scale);
 		rows = PApplet.floor(launcher.height / scale);
 		flowField = new PVector[cols * rows];
